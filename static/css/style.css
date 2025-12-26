@@ -1,0 +1,14 @@
+/* Основные стили уже в шаблоне, это дополнение */
+.card-hover:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.badge-expired { background-color: #dc3545; }
+.badge-active { background-color: #28a745; }
+.badge-paused { background-color: #ffc107; color: #000; }
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,0.075);
+}

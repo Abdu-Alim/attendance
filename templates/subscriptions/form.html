@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ title }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'subscription_list' %}" class="btn btn-secondary">
+            ← Назад к списку
+        </a>
+    </div>
+</div>
+
+<div class="card shadow">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Клиент *</label>
+                    {{ form.client }}
+                    {% if form.client.errors %}
+                    <div class="text-danger">{{ form.client.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Тип абонемента *</label>
+                    {{ form.subscription_type }}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Дата начала *</label>
+                    {{ form.start_date }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Дата окончания *</label>
+                    {{ form.end_date }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Количество посещений *</label>
+                    {{ form.visits_total }}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Стоимость</label>
+                    {{ form.price }}
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <small>
+                    💡 При создании абонемента количество оставшихся посещений будет равно общему количеству посещений.
+                    Посещения будут автоматически списываться при регистрации визитов.
+                </small>
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="submit" class="btn btn-primary">Сохранить абонемент</button>
+                <a href="{% url 'subscription_list' %}" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Добавляем классы Bootstrap к полям формы
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            if (!input.classList.contains('form-control')) {
+                input.classList.add('form-control');
+            }
+        });
+        
+        // Устанавливаем минимальную дату для окончания как дату начала
+        const startDate = document.getElementById('id_start_date');
+        const endDate = document.getElementById('id_end_date');
+        
+        if (startDate && endDate) {
+            startDate.addEventListener('change', function() {
+                endDate.min = this.value;
+                if (endDate.value && endDate.value < this.value) {
+                    endDate.value = this.value;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

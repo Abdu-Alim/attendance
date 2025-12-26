@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Статистика{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Статистика системы</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'export_excel' %}" class="btn btn-success me-2">📊 Excel отчет</a>
+        <a href="{% url 'export_pdf' %}" class="btn btn-danger">📄 PDF отчет</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Всего клиентов</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.total_clients }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Активные абонементы</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.active_subscriptions }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-id-card fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Посещений сегодня</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.today_visits }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Заканчиваются на этой неделе</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.expiring_this_week }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Общая статистика</h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>Всего абонементов</td>
+                            <td class="text-right"><strong>{{ stats.total_subscriptions }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Посещений за неделю</td>
+                            <td class="text-right"><strong>{{ stats.week_visits }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Всего посещений</td>
+                            <td class="text-right"><strong>{{ stats.total_visits }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Активных абонементов</td>
+                            <td class="text-right"><strong>{{ stats.active_subscriptions }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Быстрые действия</h6>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <a href="{% url 'export_excel' %}" class="list-group-item list-group-item-action">
+                        📊 Экспорт всех посещений в Excel
+                    </a>
+                    <a href="{% url 'export_pdf' %}" class="list-group-item list-group-item-action">
+                        📄 Экспорт отчета в PDF
+                    </a>
+                    <a href="{% url 'employee_list' %}" class="list-group-item list-group-item-action">
+                        👥 Управление сотрудниками
+                    </a>
+                    <a href="{% url 'subscription_list' %}" class="list-group-item list-group-item-action">
+                        📋 Просмотр всех абонементов
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Системная информация</h6>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-info">
+            <p><strong>Версия системы:</strong> GYM Management v1.0</p>
+            <p><strong>Роли пользователей:</strong> Администратор, Сотрудник</p>
+            <p><strong>Функции безопасности:</strong> Аутентификация, Авторизация, CSRF защита</p>
+            <p><strong>Формы отчетности:</strong> Excel (.xlsx), PDF (.pdf)</p>
+        </div>
+        <p class="text-center">
+            <small class="text-muted">Система разработана для автоматизации учета посещений спортивного зала</small>
+        </p>
+    </div>
+</div>
+{% endblock %}

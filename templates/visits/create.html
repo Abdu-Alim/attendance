@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Регистрация посещения{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Регистрация посещения</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            ← Назад на дашборд
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h6 class="m-0 font-weight-bold">Регистрация входа клиента</h6>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Клиент *</label>
+                        {{ form.client }}
+                        <div class="form-text">Выберите клиента из списка</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Абонемент для списания *</label>
+                        {{ form.subscription }}
+                        <div class="form-text">Будет списано 1 посещение с выбранного абонемента</div>
+                    </div>
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Ошибка:</strong> Проверьте правильность заполнения формы.
+                    </div>
+                    {% endif %}
+                    
+                    <div class="alert alert-warning">
+                        ⚠️ После нажатия кнопки "Зарегистрировать посещение" будет автоматически списано 1 посещение с абонемента клиента.
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            ✅ Зарегистрировать посещение
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card shadow mt-4">
+            <div class="card-header bg-info text-white">
+                <h6 class="m-0 font-weight-bold">Быстрые подсказки</h6>
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li>Если у клиента нет активного абонемента, сначала создайте его</li>
+                    <li>Для регистрации выхода используйте дашборд</li>
+                    <li>Если ошиблись с выбором абонемента, администратор может сделать корректировку</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Добавляем классы Bootstrap
+        const inputs = document.querySelectorAll('select');
+        inputs.forEach(input => {
+            input.classList.add('form-control');
+        });
+        
+        // Динамическое обновление списка абонементов при выборе клиента
+        const clientSelect = document.querySelector('#id_client');
+        const subscriptionSelect = document.querySelector('#id_subscription');
+        
+        if (clientSelect && subscriptionSelect) {
+            clientSelect.addEventListener('change', function() {
+                // Здесь можно добавить AJAX запрос для загрузки абонементов выбранного клиента
+                // Но для простоты оставляем как есть
+                console.log('Клиент изменен, нужно обновить абонементы');
+            });
+        }
+    });
+</script>
+{% endblock %}

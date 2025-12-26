@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Сотрудники{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Управление сотрудниками</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'employee_create' %}" class="btn btn-primary">
+            👤 Добавить сотрудника
+        </a>
+    </div>
+</div>
+
+<div class="card shadow">
+    <div class="card-header">
+        <h6 class="m-0 font-weight-bold">Список сотрудников</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Логин</th>
+                        <th>Имя пользователя</th>
+                        <th>Email</th>
+                        <th>Роль</th>
+                        <th>Дата регистрации</th>
+                        <th>Статус</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in employees %}
+                    <tr>
+                        <td>{{ employee.user.username }}</td>
+                        <td>{{ employee.user.first_name }} {{ employee.user.last_name }}</td>
+                        <td>{{ employee.user.email }}</td>
+                        <td>
+                            {% if employee.role == 'admin' %}
+                            <span class="badge bg-danger">Администратор</span>
+                            {% else %}
+                            <span class="badge bg-info">Сотрудник</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ employee.user.date_joined|date:"d.m.Y" }}</td>
+                        <td>
+                            {% if employee.user.is_active %}
+                            <span class="badge bg-success">Активен</span>
+                            {% else %}
+                            <span class="badge bg-danger">Заблокирован</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">Нет сотрудников</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="alert alert-info mt-3">
+            <small>
+                💡 Только администраторы имеют доступ к этому разделу.
+                Сотрудники не могут просматривать или редактировать информацию о других сотрудниках.
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}

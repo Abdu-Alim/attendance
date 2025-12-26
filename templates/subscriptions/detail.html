@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Абонемент: {{ subscription }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Абонемент</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'subscription_list' %}" class="btn btn-secondary">← Назад к списку</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h6 class="m-0 font-weight-bold">Информация об абонементе</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Клиент:</strong> {{ subscription.client }}</p>
+                <p><strong>Тип абонемента:</strong> {{ subscription.get_subscription_type_display }}</p>
+                <p><strong>Дата начала:</strong> {{ subscription.start_date|date:"d.m.Y" }}</p>
+                <p><strong>Дата окончания:</strong> {{ subscription.end_date|date:"d.m.Y" }}</p>
+                <p><strong>Статус:</strong> 
+                    {% if subscription.status == 'active' %}
+                    <span class="badge bg-success">Активен</span>
+                    {% elif subscription.status == 'expired' %}
+                    <span class="badge bg-danger">Истек</span>
+                    {% else %}
+                    <span class="badge bg-warning">{{ subscription.get_status_display }}</span>
+                    {% endif %}
+                </p>
+                <p><strong>Дней до окончания:</strong> 
+                    {% if subscription.days_left >= 0 %}
+                        {{ subscription.days_left }}
+                    {% else %}
+                        <span class="text-danger">просрочен</span>
+                    {% endif %}
+                </p>
+                <p><strong>Стоимость:</strong> {{ subscription.price }} ₽</p>
+                <p><strong>Создан:</strong> {{ subscription.created_at|date:"d.m.Y H:i" }}</p>
+                {% if subscription.created_by %}
+                <p><strong>Создал:</strong> {{ subscription.created_by.username }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h6 class="m-0 font-weight-bold">Посещения</h6>
+            </div>
+            <div class="card-body text-center">
+                <div class="display-1">{{ subscription.visits_left }}</div>
+                <p class="text-muted">осталось посещений из {{ subscription.visits_total }}</p>
+                
+                {% if subscription.visits_left <= 3 %}
+                <div class="alert alert-warning">
+                    ⚠️ Осталось мало посещений! Рекомендуем напомнить клиенту о продлении.
+                </div>
+                {% endif %}
+                
+                {% if subscription.days_left <= 7 and subscription.days_left >= 0 %}
+                <div class="alert alert-warning">
+                    ⏰ Абонемент заканчивается через {{ subscription.days_left }} дней
+                </div>
+                {% elif subscription.days_left < 0 %}
+                <div class="alert alert-danger">
+                    ⛔ Абонемент просрочен!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header bg-info text-white">
+        <h6 class="m-0 font-weight-bold">История списаний</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Тип операции</th>
+                        <th>Количество</th>
+                        <th>Примечание</th>
+                        <th>Сотрудник</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for writeoff in writeoffs %}
+                    <tr>
+                        <td>{{ writeoff.created_at|date:"d.m.Y H:i" }}</td>
+                        <td>
+                            {% if writeoff.writeoff_type == 'auto' %}
+                            <span class="badge bg-primary">Автосписание</span>
+                            {% elif writeoff.writeoff_type == 'manual' %}
+                            <span class="badge bg-warning">Ручное</span>
+                            {% elif writeoff.writeoff_type == 'correction' %}
+                            <span class="badge bg-danger">Коррекция</span>
+                            {% else %}
+                            <span class="badge bg-success">Добавление</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if writeoff.amount > 0 %}
+                            <span class="text-danger">-{{ writeoff.amount }}</span>
+                            {% else %}
+                            <span class="text-success">+{{ writeoff.amount|slice:"1:" }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ writeoff.notes|default:"—" }}</td>
+                        <td>{{ writeoff.created_by.username|default:"—" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">Нет записей о списаниях</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

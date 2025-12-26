@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Клиент: {{ client }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Клиент: {{ client.full_name }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'client_edit' client.pk %}" class="btn btn-warning me-2">✏️ Редактировать</a>
+        <a href="{% url 'subscription_create' %}" class="btn btn-success me-2">➕ Новый абонемент</a>
+        <a href="{% url 'client_list' %}" class="btn btn-secondary">← Назад</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h6 class="m-0 font-weight-bold">Информация о клиенте</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>ФИО:</strong> {{ client.full_name }}</p>
+                <p><strong>Телефон:</strong> {{ client.phone }}</p>
+                <p><strong>Email:</strong> {{ client.email|default:"—" }}</p>
+                <p><strong>Добавлен:</strong> {{ client.created_at|date:"d.m.Y" }}</p>
+                {% if client.created_by %}
+                <p><strong>Добавил:</strong> {{ client.created_by.username }}</p>
+                {% endif %}
+                {% if client.notes %}
+                <hr>
+                <p><strong>Заметки:</strong></p>
+                <p>{{ client.notes }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h6 class="m-0 font-weight-bold">Активные абонементы</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Тип</th>
+                                <th>Начало</th>
+                                <th>Окончание</th>
+                                <th>Посещений</th>
+                                <th>Осталось</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for subscription in subscriptions %}
+                            <tr>
+                                <td>{{ subscription.get_subscription_type_display }}</td>
+                                <td>{{ subscription.start_date|date:"d.m.Y" }}</td>
+                                <td>{{ subscription.end_date|date:"d.m.Y" }}</td>
+                                <td>{{ subscription.visits_total }}</td>
+                                <td>{{ subscription.visits_left }}</td>
+                                <td>
+                                    {% if subscription.status == 'active' %}
+                                    <span class="badge bg-success">Активен</span>
+                                    {% elif subscription.status == 'expired' %}
+                                    <span class="badge bg-danger">Истек</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">{{ subscription.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'subscription_detail' subscription.pk %}" class="btn btn-sm btn-info">Подробнее</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">Нет абонементов</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow">
+    <div class="card-header bg-info text-white">
+        <h6 class="m-0 font-weight-bold">История посещений</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Дата и время</th>
+                        <th>Вход</th>
+                        <th>Выход</th>
+                        <th>Продолжительность</th>
+                        <th>Зарегистрировал</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for visit in visits %}
+                    <tr>
+                        <td>{{ visit.check_in|date:"d.m.Y" }}</td>
+                        <td>{{ visit.check_in|time:"H:i" }}</td>
+                        <td>
+                            {% if visit.check_out %}
+                            {{ visit.check_out|time:"H:i" }}
+                            {% else %}
+                            <span class="badge bg-warning">В зале</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ visit.duration }}</td>
+                        <td>{{ visit.created_by.username|default:"—" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">Нет посещений</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
